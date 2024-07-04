@@ -1,0 +1,19 @@
+@startuml
+
+actor alice
+participant "dApp" as dapp
+participant "Covered Calls Vault" as vault
+
+alice -> dapp : connect Aptos wallet
+dapp -> alice : connect and show available vault
+alice -> dapp : selects vault
+dapp -> alice : show vault and deposit interface
+alice -> dapp : enter amount of APT token to invest and clicks invest
+dapp -> vault : deposit(round, amount)
+vault -> vault : currentRound(): round
+vault -> vault : updateUserDepositsAndMintShares(user, round, amount)
+vault -> vault : emit events
+vault -> dapp : receipt
+dapp -> alice : show confirmation and show trx
+
+@enduml
