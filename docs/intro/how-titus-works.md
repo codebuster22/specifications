@@ -42,6 +42,13 @@ This defines a sequence of integer values for `round` starting at 1 and ending a
     2. OTM: Buyer doesn't get anything and the collateral deposited for `On` is returned back to vault in full.
 8. Repeat
 
+Round 1 : 9 Pm to 11 PM - Deposit Period
+Round 2 : 11 PM to 01 AM - Deposit Period
+.
+.
+.
+Round N : 12 PM to 2 PM - deposit period
+
 ## Phases of lifecycle:
 1. Deposit Phase: Phase where users can deposit into a round to participate in minting of options token.
 2. Active Phase: Phase where the options tokens are minted using the collateral deposited in a particular round and are available on auction.

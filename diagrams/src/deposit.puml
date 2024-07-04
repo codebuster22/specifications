@@ -1,5 +1,7 @@
 @startuml
 
+title "Deposit"
+
 actor alice
 participant "dApp" as dapp
 participant "Covered Calls Vault" as vault

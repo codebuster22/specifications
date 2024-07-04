@@ -1,0 +1,29 @@
+@startuml
+
+title "Standard Withdrawal"
+
+actor alice
+participant "dApp" as dapp
+participant "Covered Calls Vault" as vault
+
+alice -> dapp : connect Aptos wallet
+dapp -> alice : connect and show positions
+alice -> dapp : selects position
+dapp -> alice : show position and state(lifecycle)
+alt "In Execution Phase: Standard Withdraw Active"
+    alice -> dapp : clicks standard withdraw
+    dapp -> vault : standard withdraw
+    vault -> vault : getRoundDetails(round): RoundDetails
+    vault -> vault : checkIfStandardWithdrawalActive(round): bool
+    alt "Standard Withdrawal active"
+        vault -> vault : calculateAmountPerShare(round): amountPerShare
+        vault -> vault : withdraw(user, amountPerShare*shareAmount)
+        vault -> vault : burnUserShares(user, shareAmount)
+        vault -> dapp : receipt
+        dapp -> alice : show confirmation and show trx
+    else "Standard Withdrawal inactive"
+        vault -> vault : revert
+        vault -> dapp : failed trx
+        dapp -> alice : show error and failed trx
+end
+@enduml

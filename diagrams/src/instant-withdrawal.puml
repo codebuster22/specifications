@@ -1,0 +1,28 @@
+@startuml
+
+title "Instant Withdrawal"
+
+actor alice
+participant "dApp" as dapp
+participant "Covered Calls Vault" as vault
+
+alice -> dapp : connect Aptos wallet
+dapp -> alice : connect and show positions
+alice -> dapp : selects position
+dapp -> alice : show position and state(lifecycle)
+alt "In Deposit Phase: Instant Withdraw Active"
+    alice -> dapp : clicks instant withdraw
+    dapp -> vault : instant withdraw
+    vault -> vault : getRoundDetails(round): RoundDetails
+    vault -> vault : checkIfInstantWithdrawalActive(round): bool
+    alt "Instant Withdrawal active"
+        vault -> vault : withdraw(user, amount)
+        vault -> vault : burnUserShares(user, shareAmount)
+        vault -> dapp : receipt
+        dapp -> alice : show confirmation and show trx
+    else "Instant Withdrawal inactive"
+        vault -> vault : revert
+        vault -> dapp : failed trx
+        dapp -> alice : show error and failed trx
+end
+@enduml
