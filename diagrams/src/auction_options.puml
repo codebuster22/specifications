@@ -1,0 +1,5 @@
+@startuml "auction_options"
+
+title "Auction options for round"
+
+@enduml

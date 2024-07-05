@@ -7,9 +7,12 @@ sidebar_position: 1
 ## Architecture
 We will be following the same architecture as [Ribbon Finance](https://docs.ribbon.finance/theta-vault/ribbon-v2) with adaptation based on our needs.
 
+![System Design](../../out/diagrams/src/system/system.png)
 
 ## Deposit
 Users can visit the vault page, deposit collateral into a round and get shares for the round.
+
+![Deposit](../../out/diagrams/src/deposit/deposit.png)
 
 ## Withdrawal
 Titus finance will have two types of deposit:
@@ -17,9 +20,11 @@ Titus finance will have two types of deposit:
 ### Instant Withdrawal
 Instant Withdrawal are the types of withdrawal where user is withdrawing the funds during the deposit phase of round `n` given the collateral deposited for round `n` is not yet used to mint options token.
 When user does instant withdrawal, the user receives 100% refund and the shares are burned.
+![Instant Withdrawal](../../out/diagrams/src/instant-withdrawal/instant-withdrawal.png)
 
 ### Standard Withdrawal
 Standard withdrawal are the typees of withdrawal where users is withdrawaing the total value equating to share balance of user after the execution phase given the settlement of the premiums and execution of the options contract is complete.
+![Standard Withdrawal](../../out/diagrams/src/standard-withdrawal/standard-withdrawal.png)
 
 Note: Users are not allowed to withdraw during the active phase.
 

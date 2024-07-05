@@ -1,0 +1,5 @@
+@startuml "settle_otm"
+
+title "[OTM] Settle options for round out-of-the-money"
+
+@enduml
