@@ -1,0 +1,26 @@
+@startuml "trusted-entity-exercise-options"
+
+title "Exercise Options by Trusted Entity"
+
+actor "Trusted Entity" as trusted
+participant "Options Tokens" as otoken
+participant "Covered Calls Vault" as vault
+participant "Pyth Oracle" as pyth
+participant "AMM" as amm
+
+trusted -> otoken: exercise options owned by buyer which are out of the money
+otoken -> otoken: ensure the expiry date is in past
+alt "otoken not reached expiry (expiryTime > currentTime)"
+    otoken -> trusted: revert with error string "Options token not expired"
+else "otoken reached expiry (expiryTime <= currentTime)"
+    otoken -> pyth: get spot price of asset
+    pyth -> otoken: return spot price
+    otoken -> otoken: ensure the option is out of the money (strike price > spot price)
+    alt "Options is otm"
+        otoken -> vault: transfer underlying asset back to the vault
+        otoken -> otoken: burn the options token
+    else "Options is itm or atm"
+        otoken -> trusted: revert with error string "Options is not out of the money"
+    end
+end
+@enduml

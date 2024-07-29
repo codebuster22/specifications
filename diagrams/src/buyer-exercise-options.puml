@@ -1,0 +1,30 @@
+@startuml "buyer-excercise-options"
+
+title "Exercise Options by buyer"
+
+actor "Buyer" as buyer
+participant "Options Tokens" as otoken
+participant "Covered Calls Vault" as vault
+participant "Pyth Oracle" as pyth
+participant "AMM" as amm
+
+buyer -> otoken: exercise options owned by buyer
+otoken -> otoken: ensure the expiry date is in past
+alt "otoken not reached expiry (expiryTime > currentTime)"
+    otoken -> buyer: revert with error string "Options token not expired"
+else "otoken reached expiry (expiryTime <= currentTime)"
+    otoken -> pyth: get spot price of asset
+    pyth -> otoken: return spot price
+    otoken -> otoken: ensure the option is in-the-money or at-the-money (strike price <= spot price)
+    alt "Options is otm"
+        otoken -> buyer: revert with error string "Options is out of the money"
+    else "Options is itm or atm"
+        otoken -> otoken: calculate profit
+        otoken -> amm: swap the underlying asset to the USDC. amountOut == profit
+        amm -> otoken: transfer USDC
+        otoken -> buyer: transfer USDC to user
+        otoken -> vault: transfer remaining amount of underlying asset back to the vault
+        otoken -> otoken: burn the options token
+    end
+end
+@enduml
