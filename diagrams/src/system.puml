@@ -5,14 +5,14 @@ skinparam ComponentStyle rectangle
 actor "Depositor" as depositor
 component "Vault" as vault
 component "Options Factory" as ofactory
-component "Auction" as auction
+component "Marketplace" as marketplace
 component "Strike Price Selection" as mvol
 
 depositor -> vault : "1. Deposit collateral"
 vault -up--> mvol : "2. Select Strike Price"
 vault -> ofactory : "3. Deposit Collateral and Mint oTokens"
-vault --> auction : "4. Put oToken on auction"
-auction --> vault : "5. return premiums earned"
+vault --> marketplace : "4. List oToken on marketplace with predecided premium price"
+marketplace --> vault : "5. return premiums earned"
 vault <- ofactory : "6. Return collateral"
 
 @enduml

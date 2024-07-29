@@ -1,0 +1,33 @@
+@startuml "buyer-purchase-options"
+
+title "Buyer purchase Options for round"
+
+actor "Buyer" as buyer
+participant "Marketplace" as marketplace
+participant "Covered Calls Vault" as vault
+
+buyer -> marketplace: buy option(round, lotSize)
+marketplace -> marketplace: ensure lotSize quantity is available for purchase
+alt "LotSize > availablePurchase options"
+    marketplace -> buyer: revert with error message "Lot size exceed available options tokens"
+else "LotSize <= availablePurchase options"
+    marketplace -> marketplace: ensure the round options haven't expired
+    alt "Round options expired"
+        marketplace -> buyer: revert with error message "Requested Round options have expired"
+    else "Round options not expired"
+        marketplace -> vault: fetch premium price for round
+        vault -> marketplace: return premium price for round
+        marketplace -> marketplace: ensure exact funds are transferred to purchase options (premiumForRound * lotSize)
+        alt "Value sent != premiumForRound * lotSize"
+            marketplace -> buyer: revert with error message "Please send exact funds to purchase options"
+        else "Value sent == premiumForRound * lotSize"
+            marketplace -> marketplace: update state and register correct data
+            marketplace -> marketplace: place order and transfer funds to marketplace from buyer
+            marketplace -> vault: transfer collected premium to vault and register data in the round struct
+            marketplace -> buyer: transfer options tokens to buyer
+            marketplace -> buyer: emit event to signify the purchase of options
+        end
+    end
+end
+
+@enduml
