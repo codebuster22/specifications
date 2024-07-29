@@ -2,6 +2,38 @@
 
 title "Mint options for round"
 
+actor "Trusted Entity" as trusted
+participant "Covered Calls Vault" as vault
+participant "Options Token" as otoken
+participant "Marketplace" as marketplace
 
+trusted -> vault: mint options token for round
+vault -> vault: ensure the underlying asset deposited in round is not zero
+alt "deposits == 0"
+    vault -> vault: mark current rounds as invalid round and discard the round
+    vault -> vault: start new round (round + 1)
+    vault -> trusted: emit event with success or emit multiple events
+else "deposit > 0"
+    vault -> vault: ensure the round is in Phase 2 (Active Phase) which can be determined by the timestamp set for round
+    alt "round in Deposit phase"
+        vault -> trusted: revert with error string "The Deposit phase is not yet complete"
+    else "round in active phase"
+        vault -> vault: ensure the options are not already minted
+        alt "Options tokens already minted"
+            vault -> trusted: revert with error string "The option tokens have already been minted"
+        else "Options tokens not minted"
+            vault -> vault: ensure the strike price and premium set on the vault is not older than 1 minute
+            alt "last update time > 1 minute in the past"
+                vault -> trusted: revert with error string "Wait for latest update of strike price and premium"
+            else "last update time <= 1 minute in the past"
+                vault -> otoken: use the underlying asset to mint options token in lots
+                otoken -> vault: mint options token to vault
+                vault -> marketplace: list the options token for sale on marketplace at premium price set
+                vault -> vault: set the next round into Deposit Phase (round + 1)
+                vault -> trusted: emit event with success or emit multiple events
+            end
+        end
+    end
+end
 
 @enduml

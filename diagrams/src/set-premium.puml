@@ -8,12 +8,10 @@ participant "Covered Calls Vault" as vault
 trusted -> vault: setPremium(round)
 vault -> vault: assert(trusted == allowedAccount)
 alt "trusted == allowedAccount"
-    vault -> vault: ensure round's options tokens minted but not expired
-    alt "round options minted and not expired"
+    vault -> vault: ensure round's options tokens minted/not-minted but not expired
+    alt "round options minted/not-minted and not expired"
         vault -> vault: update premium for round
         vault -> trusted: emit event with updated premium
-    else "round options not minted"
-        vault -> trusted: revert and not update premium
     else "round options minted and expired"
         vault -> trusted: revert and not update premium
     end

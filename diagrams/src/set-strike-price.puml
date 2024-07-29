@@ -10,7 +10,7 @@ vault -> vault: assert(trusted == allowedAccount)
 alt "trusted == allowedAccount"
     vault -> vault: ensure round's options tokens not yet minted
     alt "round options not minted"
-        vault -> vault: update strike price for round
+        vault -> vault: update strike price for round and the time when the strike price was updated
         vault -> trusted: emit event with updated strike price
     else "round options minted"
         vault -> trusted: revert and not update strike price
