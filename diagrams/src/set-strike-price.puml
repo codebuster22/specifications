@@ -1,0 +1,22 @@
+@startuml "set-strike-price"
+
+title "Set Strike Price"
+
+actor "Trusted Entity" as trusted
+participant "Covered Calls Vault" as vault
+
+trusted -> vault: setStrikePrice(round)
+vault -> vault: assert(trusted == allowedAccount)
+alt "trusted == allowedAccount"
+    vault -> vault: ensure round's options tokens not yet minted
+    alt "round options not minted"
+        vault -> vault: update strike price for round
+        vault -> trusted: emit event with updated strike price
+    else "round options minted"
+        vault -> trusted: revert and not update strike price
+    end
+else "trusted != allowedAccount"
+    vault -> trusted: revert and not update strike price
+end
+
+@enduml
